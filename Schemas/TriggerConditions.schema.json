@@ -1,0 +1,276 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "TriggerConditions",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "Id": {
+      "type": "string",
+      "readonly": true,
+      "description": "Unique identifier for this trigger condition set (auto-generated, read-only)."
+    },
+    "Name": {
+      "type": "string",
+      "description": "Optional name for debugging this trigger (e.g., 'Property Purchase Trigger')"
+    },
+    "TriggerMatchType": {
+      "description": "How to combine trigger condition results. All=all must pass, Any=any can pass, None=none should pass.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/MatchLogic"
+        }
+      ]
+    },
+    "TriggerMatchValue": {
+      "type": "boolean",
+      "description": "Value to compare condition results against for '1.1 - Trigger Match Type'."
+    },
+    "TagMatchType": {
+      "description": "How to combine results from '2.2 - Tag Rules'. All=all rules must pass, Any=any rule can pass, None=no rules should pass.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/MatchLogic"
+        }
+      ]
+    },
+    "MatchValue": {
+      "type": "boolean"
+    },
+    "TagRules": {
+      "type": "array",
+      "description": "Set of Tagged based Financial Item status checks.\nNo 'Tag Rules' = Trigger ignored.",
+      "items": {
+        "$ref": "#/definitions/TagConditionals"
+      }
+    },
+    "StartDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "StartDateProxy": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "description": "Trigger condition start date. Item will only be active on or after this date.\nNo Date = Check Disabled",
+      "format": "date-time"
+    },
+    "EndDate": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "format": "date"
+    },
+    "EndDateProxy": {
+      "type": [
+        "null",
+        "string"
+      ],
+      "description": "Trigger condition end date. Item will only be active on or before this date.\nNo Date = Check Disabled",
+      "format": "date-time"
+    },
+    "LiquidAssets": {
+      "description": "Trigger when total liquid assets meet threshold criteria.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ValueTrigger"
+        }
+      ]
+    },
+    "MainSavingsBalance": {
+      "description": "Trigger when main savings account balance meets threshold criteria.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ValueTrigger"
+        }
+      ]
+    },
+    "Age": {
+      "description": "Trigger when user's age meets the threshold criteria.",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/ValueTrigger"
+        }
+      ]
+    },
+    "MinAge": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32",
+      "x-deprecated": true,
+      "x-deprecatedMessage": "Use Age ValueTrigger instead. Will be removed in future version."
+    },
+    "MaxAge": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "format": "int32",
+      "x-deprecated": true,
+      "x-deprecatedMessage": "Use Age ValueTrigger instead. Will be removed in future version."
+    }
+  },
+  "definitions": {
+    "MatchLogic": {
+      "type": "integer",
+      "description": "0 = All\n1 = Any\n2 = None",
+      "x-enumNames": [
+        "All",
+        "Any",
+        "None"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "TagConditionals": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Id": {
+          "type": "string",
+          "readonly": true,
+          "description": "Unique identifier for this tag conditional (auto-generated, read-only)."
+        },
+        "Name": {
+          "type": "string",
+          "description": "Human-readable name for debugging this tag conditional (e.g., 'Requires Active Property')"
+        },
+        "Enabled": {
+          "type": "boolean",
+          "description": "Whether this tag conditional is active and should be evaluated. If false, this conditional is skipped."
+        },
+        "Description": {
+          "type": "string",
+          "description": "Optional description of this tag conditional's purpose or role."
+        },
+        "Tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "MatchType": {
+          "description": "All = all items must match, Any = at least one item must match, None = no items should match",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MatchLogic"
+            }
+          ]
+        },
+        "MatchValue": {
+          "type": "boolean",
+          "description": "true = items must be enabled, false = items must be disabled"
+        }
+      }
+    },
+    "ValueTrigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Id": {
+          "type": "string",
+          "readonly": true,
+          "description": "Unique identifier for this trigger (auto-generated, read-only)."
+        },
+        "Name": {
+          "type": "string",
+          "description": "Optional name for this trigger (e.g., 'Emergency Fund Threshold')"
+        },
+        "Enabled": {
+          "type": "boolean",
+          "description": "Enable or disable the entire trigger"
+        },
+        "Operator": {
+          "description": "Comparison operator to use: GreaterThan, GreaterThanOrEqual, LessThan, LessThanOrEqual, Equal, NotEqual",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Comparator"
+            }
+          ]
+        },
+        "ComparisonValue": {
+          "type": "number",
+          "description": "The value to compare against using the selected operator.",
+          "format": "decimal"
+        },
+        "MinEnabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "x-deprecated": true,
+          "x-deprecatedMessage": "Use Operator and ComparisonValue instead. Will be removed in future version."
+        },
+        "MinValue": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "decimal",
+          "x-deprecated": true,
+          "x-deprecatedMessage": "Use Operator and ComparisonValue instead. Will be removed in future version."
+        },
+        "MaxEnabled": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "x-deprecated": true,
+          "x-deprecatedMessage": "Use Operator and ComparisonValue instead. Will be removed in future version."
+        },
+        "MaxValue": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "format": "decimal",
+          "x-deprecated": true,
+          "x-deprecatedMessage": "Use Operator and ComparisonValue instead. Will be removed in future version."
+        },
+        "TriggerLimit": {
+          "type": "integer",
+          "description": "The maximum number of times the trigger can be activated. 0 = unlimited"
+        },
+        "TriggerCount": {
+          "type": "integer",
+          "description": "The number of times the trigger has been activated",
+          "format": "int32"
+        },
+        "LastTriggerDate": {
+          "type": "string",
+          "description": "The date when the trigger was last activated",
+          "format": "date"
+        }
+      }
+    },
+    "Comparator": {
+      "type": "integer",
+      "description": "0 = Equal\n1 = NotEqual\n2 = GreaterThan\n3 = GreaterThanOrEqual\n4 = LessThan\n5 = LessThanOrEqual",
+      "x-enumNames": [
+        "Equal",
+        "NotEqual",
+        "GreaterThan",
+        "GreaterThanOrEqual",
+        "LessThan",
+        "LessThanOrEqual"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  }
+}
