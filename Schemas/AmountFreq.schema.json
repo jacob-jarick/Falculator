@@ -1,0 +1,211 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "AmountFreq",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "Id": {
+      "type": "string",
+      "readonly": true,
+      "description": "Unique identifier for this payment (auto-generated, read-only)."
+    },
+    "Name": {
+      "type": "string",
+      "description": "Optional name for this payment (e.g., 'Salary', 'Rent', 'Mortgage Interest')"
+    },
+    "Enabled": {
+      "type": "boolean",
+      "description": "Enable or disable this payment/interest calculation"
+    },
+    "Amount": {
+      "type": "number",
+      "description": "The value of the income or expense.",
+      "format": "decimal"
+    },
+    "IsPercentage": {
+      "type": "boolean",
+      "description": "If True Amount is treated as a percentage, if false Amount is a fixed value"
+    },
+    "PercentageBasis": {
+      "description": "Sets if percentage calculations are based on Source or Destination value.\nSource/Self: Calculate percentage of source item value.\nDestination: Calculate percentage of target item value (EventItem only).\nNote: FinancialItem AmountFreqs always use Self/Source (enforced by Sanitize).",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/BasisType"
+        }
+      ]
+    },
+    "AnnualRateMonthlyCompounding": {
+      "type": "boolean",
+      "description": "If true, the interest rate is treated as an annual interest rate that is applied monthly. Schedule is set to Monthly and Is Percentage is set to true."
+    },
+    "Schedule": {
+      "description": "Payment schedule and frequency (Daily, Weekly, Fortnightly, Monthly, Annual)",
+      "oneOf": [
+        {
+          "$ref": "#/definitions/TriggerFrequency"
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "BasisType": {
+      "type": "integer",
+      "description": "0 = Source\n1 = Destination\n2 = Self",
+      "x-enumNames": [
+        "Source",
+        "Destination",
+        "Self"
+      ],
+      "enum": [
+        0,
+        1,
+        2
+      ]
+    },
+    "TriggerFrequency": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Id": {
+          "type": "string",
+          "readonly": true,
+          "description": "Unique identifier for this TriggerFrequency (auto-generated, read-only)."
+        },
+        "Name": {
+          "type": "string",
+          "description": "Optional name for this TriggerFrequency"
+        },
+        "Frequency": {
+          "description": "How often this trigger fires: Daily, Weekly, Fortnightly, Monthly, Annual",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/Frequency"
+            }
+          ]
+        },
+        "DayOfWeek": {
+          "description": "Day of week for Weekly/Fortnightly triggers. Only used if Frequency is Weekly or Fortnightly.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/DayOfWeek"
+            }
+          ]
+        },
+        "DayOfMonth": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "description": "Day of month for Monthly/Annual triggers (1-31). 31 = last day of month. Only used if Frequency is Monthly or Annual.",
+          "format": "int32"
+        },
+        "MonthOfYear": {
+          "description": "Month for Annual triggers. Only used if Frequency is Annual.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/MonthOfYear"
+            }
+          ]
+        },
+        "TriggerLimit": {
+          "type": "integer",
+          "description": "Maximum times this trigger can fire (0 = unlimited, 1 = once, n = max n times)",
+          "format": "int32"
+        },
+        "LastTriggered": {
+          "type": [
+            "null",
+            "string"
+          ],
+          "readonly": true,
+          "description": "Date when this trigger last fired (null = never triggered)",
+          "format": "date"
+        },
+        "TriggerCount": {
+          "type": "integer",
+          "readonly": true,
+          "description": "Number of times this trigger has fired (read-only)",
+          "format": "int32"
+        }
+      }
+    },
+    "Frequency": {
+      "type": "integer",
+      "description": "0 = Daily\n1 = Weekly\n2 = Fortnightly\n3 = Monthly\n4 = Annual",
+      "x-enumNames": [
+        "Daily",
+        "Weekly",
+        "Fortnightly",
+        "Monthly",
+        "Annual"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "DayOfWeek": {
+      "type": "integer",
+      "description": "0 = Sunday\n1 = Monday\n2 = Tuesday\n3 = Wednesday\n4 = Thursday\n5 = Friday\n6 = Saturday",
+      "x-enumNames": [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
+      ],
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "MonthOfYear": {
+      "type": "integer",
+      "description": "1 = January\n2 = February\n3 = March\n4 = April\n5 = May\n6 = June\n7 = July\n8 = August\n9 = September\n10 = October\n11 = November\n12 = December",
+      "x-enumNames": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ],
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    }
+  }
+}
